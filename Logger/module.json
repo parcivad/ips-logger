@@ -1,0 +1,15 @@
+{
+  "id": "{8F50D7E5-431E-3D60-AFAB-7E5F61AC8E64}",
+  "name": "Logger",
+  "type": 3,
+  "vendor": "Parcivad Products",
+  "aliases":
+  [
+    "Log"
+  ],
+  "url": "https://github.com/parcivad",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "log"
+}
