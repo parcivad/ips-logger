@@ -10,14 +10,18 @@ class Logger extends IPSModule {
         parent::Create();
 
         // inner json saves
-        $this->RegisterAttributeString("log", "{}");
-        $this->RegisterAttributeString("logLevels", '{"ERROR":{"color":"#ee1111","priority":3},"WARNING":{"color":"#eeee00","priority":2},"MESSAGE":{"color":"#1111ee","priority":1},"INFO":{"color":"#818181","priority":0}}');
+        $this->RegisterAttributeString("htmlView");
+        $this->RegisterAttributeString("log");
+        $this->RegisterAttributeString("logLevels");
 
         // user settings
         $this->RegisterPropertyInteger("maximumLogRecords", 100);
 
         // vars
         $this->RegisterVariableString("view", "Log View", "~HTMLBox");
+
+        // load defaults into registered attributes
+        $this->loadDefaults();
     }
     /*
      * Internal function of SDK
@@ -33,7 +37,13 @@ class Logger extends IPSModule {
      * @return void
      */
     private function reloadHTMLView(array $log) {
+        // load log in
+        $log = $this->readJson("log");
 
+        $style = '';
+        $tbody = '';
+
+        $final = readfile("defaults.json", dirname("./libs/defaults,json"));
     }
 
     /**
@@ -55,6 +65,13 @@ class Logger extends IPSModule {
         $this->WriteAttributeString($save, json_encode($jsonArray));
         // after chance reload html view
         $this->reloadHTMLView($jsonArray);
+    }
+
+    private function loadDefaults() {
+        $defaults = json_decode(readfile("defaults.json", dirname("./libs/defaults,json")),
+            true);
+        // load into ip symcon
+        $this->WriteAttributeString("htmlView", $defaults["htmlView"]);
     }
 
     //================ Configuration Formula
