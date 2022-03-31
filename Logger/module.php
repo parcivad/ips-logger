@@ -29,17 +29,20 @@ class Logger extends IPSModule {
         $this->reloadHTMLView();
     }
 
-
     /**
      * Function to add an entry into the ongoing log
-     * @param string $level     Level of
-     * @param string $message
-     * @param string $sender
+     * @param string $level     Level of the log message
+     * @param string $message   Message itself
+     * @param string $sender    String of displayed sender
      * @return void
+     * @throws UnexpectedValueException
      */
     public function entry(string $level, string $message, string $sender) {
         // add into saved json
         $log = $this->readJson("log");
+        $levelList = $this->readJson("logLevels");
+        // check if level exists
+        if (!isset($levelList[$level])) throw new UnexpectedValueException("level not existing");
         // format new entry
         $log[] = [
             "time" => time(),
@@ -52,6 +55,48 @@ class Logger extends IPSModule {
     }
 
     /**
+     * Function to add a level type to the logger
+     * @param string $name          Name of the new logger level
+     * @param int $priority         Priority of the new level
+     * @param string $color         Color that should be displayed
+     * @param string $font_weight   Html Arial font weight
+     * @return void
+     * @throws UnexpectedValueException
+     */
+    public function addLevel(string $name, int $priority, string $color, string $font_weight) {
+        // add into saved json
+        $level = $this->readJson("logLevels");
+        // check if level exists
+        if (isset($level[$name])) throw new UnexpectedValueException("level already existing");
+        // format new entry
+        $level[$name] = [
+            "priority" => $priority,
+            "color" => $color,
+            "font-weight" => $font_weight
+        ];
+        // save new entry
+        var_dump($level);
+        $this->saveJson("logLevels", $level);
+    }
+
+    /**
+     * Function to remove a level of the logger
+     * @param string $name          Name of the new logger level
+     * @return void
+     * @throws UnexpectedValueException
+     */
+    public function removeLevel(string $name) {
+        // add into saved json
+        $level = $this->readJson("logLevels");
+        // check if level exists
+        if (!isset($level[$name])) throw new UnexpectedValueException("no level with this name");
+        // format new entry
+        unset($level[$name]);
+        // save new entry
+        $this->saveJson("logLevels", $level);
+    }
+
+    /**
      * Function to resort and refresh HTML View of the Variable view
      * @return void
      */
@@ -59,7 +104,11 @@ class Logger extends IPSModule {
         // load log in
         $log = $this->readJson("log");
         $level = $this->readJson("logLevels");
-
+        // short level on given max
+        if (count($log) > $this->ReadPropertyInteger("maximumLogRecords")) {
+            $this->saveJson("log",
+                array_slice($log, count($level) - $this->ReadPropertyInteger("maximumLogRecords")));
+        }
         // buffer in table body var
         $tbody = '';
         for ($i=count($log) - 1; $i >= 0 ; $i--) {
@@ -139,6 +188,12 @@ class Logger extends IPSModule {
                 "minimum" => 100,
                 "maximum" => 9999,
                 "suffix" => " entries"
+            ],
+            [
+                "type" => "RowLayout",
+                "items" => [
+
+                ]
             ]
         ];
     }
