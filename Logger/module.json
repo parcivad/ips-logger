@@ -5,11 +5,11 @@
   "vendor": "Parcivad Products",
   "aliases":
   [
-    "Log"
+    "Logger"
   ],
   "url": "https://github.com/parcivad",
   "parentRequirements": [],
   "childRequirements": [],
   "implemented": [],
-  "prefix": "log"
+  "prefix": "logger."
 }
