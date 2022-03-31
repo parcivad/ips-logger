@@ -11,10 +11,23 @@ class Logger extends IPSModule {
 
         // inner json saves
         $this->RegisterAttributeString("htmlView", '<head><meta name="viewport" content="width=device-width, initial-scale=1"><style>%s</style></head><body><table class="styled-table"><colgroup><col class="colLevel"><col class="colPriority"><col class="colMessage"><col class="colSender"><col class="colTime"></colgroup><thead><tr><th>Level</th><th>Priority</th><th>Message</th><th>Sender</th><th>Time</th></tr></thead><tbody>%s</tbody></table></body>');
-        $this->RegisterAttributeString("cssView", '.styled-table {position: relative;display: block;background-color: #383c44;border-collapse: collapse;width: 100%;height: 500px;overflow-y: auto;overflow-x: hidden;font-size: 0.9em;font-family: sans-serif;box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);}.styled-table thead tr {background-color: #4d6070;color: #fff;text-align: left;padding: 7px 15px;}.styled-table th,.styled-table td {padding: 8px 15px;}.styled-table td {color: #ffffff;}.styled-table tbody tr {border-bottom: 1px solid #dddddd;}.styled-table tbody tr:last-of-type {border-bottom: 2px solid #818181;}.styled-table tbody tr.active-row {font-weight: bold;color: #818181;}.colLevel {width: 30em;}.colPriority {width: 110em;}.colMessage {width: 1100em;}.colSender {width: 125em;}.colTime {width: 125em;}');
-        $this->RegisterAttributeString("log", '[{"time": "1648661547","level": "Info","message": "this is a message","sender": "lol"},{"time": "1648661547","level": "Warning","message": "this is a message tagged with warning","sender": "me"},{"time": "1648661547","level": "Info","message": "this is a message","sender": "lol"},{"time": "1648661547","level": "Discovery","message": "Junge ich hab seine Ehre wiedergefunden","sender": "RIP"},{"time": "1648661547","level": "Error","message": "Einfach Ehre verloren","sender": "eric"}]');
-        $this->RegisterAttributeString("logLevels", '{"Info":{"priority":0,"color":"#383c44","font-weight":"normal"},"Discovery": {"priority": 5,"color": "#53a6cb","font-weight": "normal"},"Warning":{"priority":80,"color":"#e3bc2b","font-weight":"bold"},"Error":{"priority":90,"color":"#e34d2b","font-weight":"bold"}}');
-        $this->RegisterPropertyInteger("maximumLogRecords", 100);
+        $this->RegisterAttributeString("cssView", '.styled-table {position: relative;display: block;background-color: #%s;border-collapse: collapse;width: %d;height: %dpx;overflow-y: auto;overflow-x: hidden;font-size: 0.9em;font-family: sans-serif;box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);}.styled-table thead tr {background-color: #%s;color: #fff;text-align: left;padding: 7px 15px;}.styled-table th,.styled-table td {padding: %dpx 15px;}.styled-table td {color: #ffffff;}.styled-table tbody tr {border-bottom: 1px solid #%s;}.styled-table tbody tr:last-of-type {border-bottom: 2px solid #%s;}.styled-table tbody tr.active-row {font-weight: bold;color: #818181;}.colLevel {width: 30em;}.colPriority {width: 110em;}.colMessage {width: 1100em;}.colSender {width: 125em;}.colTime {width: 125em;}');
+        $this->RegisterAttributeString("log", '[{"time": "0","level": "Info","message": "This is the beginning of your own log","sender": "Parcivad"}]');
+        $this->RegisterPropertyString("logLevels", '[{"name":"Ok","priority":5,"color": 2412282367,"font-weight":"normal","notification": false},{"name":"Info","priority":0,"color": 3685444,"font-weight":"normal","notification": false},{"name":"Discovery","priority": 10,"color": 5482187,"font-weight": "normal","notification": false},{"name":"Warning","priority":80,"color": 14924843,"font-weight":"bold","notification": false},{"name":"Error","priority":90,"color": 14896427,"font-weight":"bold","notification": false}]');
+
+        // user interface settings
+        // general settings
+        $this->RegisterPropertyBoolean("active", true);
+        $this->RegisterPropertyInteger("maximumLogRecords", 150);
+        $this->RegisterPropertyInteger("entryHeight", 8);
+        $this->RegisterPropertyInteger("tableHeight", 500);
+        // notifications settings
+        $this->RegisterPropertyString("notificationList", "{}");
+        // style settings
+        $this->RegisterPropertyInteger("backgroundColor", 3685444);
+        $this->RegisterPropertyInteger("tableTopColor", 5070960);
+        $this->RegisterPropertyInteger("lineColor", 14540253);
+        $this->RegisterPropertyInteger("bottomColor", 8487297);
 
         // vars
         $this->RegisterVariableString("view", "Log View", "~HTMLBox");
@@ -38,11 +51,13 @@ class Logger extends IPSModule {
      * @throws UnexpectedValueException
      */
     public function entry(string $level, string $message, string $sender) {
+        // is log entry active, else cancel action
+        if (!$this->ReadPropertyBoolean("active")) return;
+
         // add into saved json
         $log = $this->readJson("log");
-        $levelList = $this->readJson("logLevels");
         // check if level exists
-        if (!isset($levelList[$level])) throw new UnexpectedValueException("level not existing");
+        if ($this->getLevel($level) == null) throw new UnexpectedValueException("level not existing");
         // format new entry
         $log[] = [
             "time" => time(),
@@ -52,48 +67,9 @@ class Logger extends IPSModule {
         ];
         // save new entry
         $this->saveJson("log", $log);
-    }
 
-    /**
-     * Function to add a level type to the logger
-     * @param string $name          Name of the new logger level
-     * @param int $priority         Priority of the new level
-     * @param string $color         Color that should be displayed
-     * @param string $font_weight   Html Arial font weight
-     * @return void
-     * @throws UnexpectedValueException
-     */
-    public function addLevel(string $name, int $priority, string $color, string $font_weight) {
-        // add into saved json
-        $level = $this->readJson("logLevels");
-        // check if level exists
-        if (isset($level[$name])) throw new UnexpectedValueException("level already existing");
-        // format new entry
-        $level[$name] = [
-            "priority" => $priority,
-            "color" => $color,
-            "font-weight" => $font_weight
-        ];
-        // save new entry
-        var_dump($level);
-        $this->saveJson("logLevels", $level);
-    }
-
-    /**
-     * Function to remove a level of the logger
-     * @param string $name          Name of the new logger level
-     * @return void
-     * @throws UnexpectedValueException
-     */
-    public function removeLevel(string $name) {
-        // add into saved json
-        $level = $this->readJson("logLevels");
-        // check if level exists
-        if (!isset($level[$name])) throw new UnexpectedValueException("no level with this name");
-        // format new entry
-        unset($level[$name]);
-        // save new entry
-        $this->saveJson("logLevels", $level);
+        // send notification if allowed
+        if ($this->getLevel($level)['notification']) $this->notification($sender, $message, $level);
     }
 
     /**
@@ -103,27 +79,67 @@ class Logger extends IPSModule {
     private function reloadHTMLView() {
         // load log in
         $log = $this->readJson("log");
-        $level = $this->readJson("logLevels");
-        // short level on given max
-        if (count($log) > $this->ReadPropertyInteger("maximumLogRecords")) {
-            $this->saveJson("log",
-                array_slice($log, count($level) - $this->ReadPropertyInteger("maximumLogRecords")));
-        }
         // buffer in table body var
         $tbody = '';
         for ($i=count($log) - 1; $i >= 0 ; $i--) {
             // get log item
             $item = $log[$i];
-            $itemLevel = $level[$item['level']];
+            $itemLevel = $this->getLevel($item['level']);
             // form html table body element with given log info
             $tbody .= sprintf('<tr style="background-color:%s"><td style="font-weight:%s;">%s</td>
                 <td>%d</td><td>%s</td><td>%s</td><td>%s</td></tr>',
-                $itemLevel['color'], $itemLevel['font-weight'], $item['level'], $itemLevel['priority'],
+                '#'.dechex($itemLevel['color']), $itemLevel['font-weight'], $item['level'], $itemLevel['priority'],
                 $item['message'], $item['sender'], date("H:i:s D", $item['time']));
         }
+        // form css
+        $css = sprintf($this->ReadAttributeString("cssView"),
+            dechex($this->ReadPropertyInteger("backgroundColor")),
+            100,
+            $this->ReadPropertyInteger("tableHeight"),
+            dechex($this->ReadPropertyInteger("tableTopColor")),
+            $this->ReadPropertyInteger("entryHeight"),
+            dechex($this->ReadPropertyInteger("lineColor")),
+            dechex($this->ReadPropertyInteger("bottomColor")));
         // set visible value
-        $this->SetValue("view", sprintf($this->ReadAttributeString("htmlView"),
-            $this->ReadAttributeString("cssView"), $tbody));
+        $this->SetValue("view", sprintf($this->ReadAttributeString("htmlView"), $css, $tbody));
+    }
+
+    /**
+     * Function to send a notification on log entry ( called by entry() )
+     * @param string $titel     Titel of the Notification
+     * @param string $message   Core Message
+     * @param string $sender    Initial Sender
+     * @return void
+     */
+    private function notification(string $titel, string $message, string $sender) {
+        $notifyReceivers = json_decode($this->ReadPropertyString("notificationList"), true);
+        foreach ($notifyReceivers as $receiver) {
+            // try to send notification
+            try {
+                WFC_PushNotification($receiver['instance'], $titel, $message. " (" . $sender . ")", "full", $this->InstanceID);
+                WFC_SendNotification($receiver['instance'], $titel, $message . " (" . $sender . ")", "Database", 300);
+            } catch (Exception $ex) {
+                IPS_LogMessage("Logger", "Popup-/Pushnotification could not be sent");
+            }
+        }
+    }
+
+    /**
+     * Function to search for a level in the logger level list
+     * @param string $levelName Name of the logger level
+     * @return mixed|null
+     */
+    private function getLevel(string $levelName) {
+        $itemLevel = null;
+        // search for level
+        $levelList = json_decode($this->ReadPropertyString("logLevels"), true);
+        foreach ($levelList as $level) {
+            if ($level['name'] == $levelName) {
+                $itemLevel = $level;
+                break;
+            }
+        }
+        return $itemLevel;
     }
 
     /**
@@ -142,9 +158,19 @@ class Logger extends IPSModule {
      * @return void
      */
     private function saveJson(string $save, array $jsonArray) {
+        // check if log is too long
+        // short level on given max
+        $log = $this->readJson("log");
+        if (count($log) > $this->ReadPropertyInteger("maximumLogRecords")) {
+            $this->saveJson("log",
+                array_slice($log, count($log) - $this->ReadPropertyInteger("maximumLogRecords")));
+            // won't get looped, because its shorted and then the condition is false
+            $this->saveJson("log", $log);
+        }
+        // save json
         $this->WriteAttributeString($save, json_encode($jsonArray));
-        // after chance reload html view
-        $this->reloadHTMLView($jsonArray);
+        // after save, reload html view for live feed
+        $this->reloadHTMLView();
     }
 
     //================ Configuration Formula
@@ -171,7 +197,6 @@ class Logger extends IPSModule {
      * @return array[] Form Actions
      */
     protected function FormActions() {
-
         return[];
     }
 
@@ -179,21 +204,159 @@ class Logger extends IPSModule {
      * @return array[] Form Elements
      */
     protected function FormElements() {
-
         return[
             [
-                "type" => "NumberSpinner",
-                "name" => "maximumLogRecords",
-                "caption" => "Maximum of recorded Log entries",
-                "minimum" => 100,
-                "maximum" => 9999,
-                "suffix" => " entries"
+                "type" => "CheckBox",
+                "caption" => "Log",
+                "name" => "active"
             ],
             [
                 "type" => "RowLayout",
                 "items" => [
-
+                    [
+                        "type" => "NumberSpinner",
+                        "name" => "maximumLogRecords",
+                        "caption" => "Maximum of recorded Log entries",
+                        "width" => "250px",
+                        "minimum" => 10,
+                        "maximum" => 9999
+                    ],
+                    [
+                        "type" => "NumberSpinner",
+                        "name" => "entryHeight",
+                        "caption" => "Height of entries",
+                        "width" => "200px",
+                        "minimum" => 2,
+                        "suffix" => " px"
+                    ],
+                    [
+                        "type" => "NumberSpinner",
+                        "name" => "tableHeight",
+                        "caption" => "Height of the table",
+                        "width" => "200px",
+                        "minimum" => 100,
+                        "suffix" => " px"
+                    ]
                 ]
+            ],
+            [
+                "type" => "RowLayout",
+                "items" => [
+                    [
+                        "type" => "SelectColor",
+                        "name" => "backgroundColor",
+                        "caption" => "Background color"
+                    ],
+                    [
+                        "type" => "SelectColor",
+                        "name" => "tableTopColor",
+                        "caption" => "Table head color"
+                    ],
+                    [
+                        "type" => "SelectColor",
+                        "name" => "lineColor",
+                        "caption" => "Line color"
+                    ],
+                    [
+                        "type" => "SelectColor",
+                        "name" => "bottomColor",
+                        "caption" => "Bottom color"
+                    ]
+                ]
+            ],
+            [
+                "type" => "List",
+                "name" => "notificationList",
+                "caption" => "Select all Visual instanced that should get a possible notification",
+                "rowCount" => count(json_decode($this->ReadPropertyString("notificationList"), true)),
+                "add" => true,
+                "delete" => true,
+                "columns" => [
+                    [
+                        "caption" => "Visual Instances",
+                        "name" => "instance",
+                        "width" => "auto",
+                        "add" => 0,
+                        "edit" => [
+                            "type" => "SelectInstance"
+                        ]
+                    ]
+                ],
+                "values" => json_decode($this->ReadPropertyString("notificationList"), true),
+            ],
+            [
+                "type" => "List",
+                "name" => "logLevels",
+                "caption" => "Mobile views to notify",
+                "rowCount" => count(json_decode($this->ReadPropertyString("logLevels"), true)),
+                "sort" => [
+                    "column" => "priority"
+                ],
+                "add" => true,
+                "delete" => true,
+                "columns" => [
+                    [
+                        "caption" => "Name",
+                        "name" => "name",
+                        "width" => "180px",
+                        "add" => "Level Name",
+                        "edit" => [
+                            "type" => "ValidationTextBox"
+                        ]
+                    ],
+                    [
+                        "caption" => "Priority",
+                        "name" => "priority",
+                        "width" => "100px",
+                        "add" => 1,
+                        "edit" => [
+                            "type" => "NumberSpinner",
+                            "minimum" => 0
+                        ]
+                    ],
+                    [
+                        "caption" => "Color",
+                        "name" => "color",
+                        "width" => "auto",
+                        "add" => 3685444,
+                        "edit" => [
+                            "type" => "SelectColor"
+                        ]
+                    ],
+                    [
+                        "caption" => "Font Weight",
+                        "name" => "font-weight",
+                        "width" => "100px",
+                        "add" => "normal",
+                        "edit" => [
+                            "type" => "Select",
+                            "options" => [
+                                [
+                                    "caption" => "Normal",
+                                    "value" => "normal"
+                                ],
+                                [
+                                    "caption" => "Bold",
+                                    "value" => "bold"
+                                ],
+                                [
+                                    "caption" => "Light",
+                                    "value" => "lighter"
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        "caption" => "Notifications",
+                        "name" => "notification",
+                        "width" => "100px",
+                        "add" => false,
+                        "edit" => [
+                            "type" => "CheckBox"
+                        ]
+                    ]
+                ],
+                "values" => json_decode($this->ReadPropertyString("logLevels"), true),
             ]
         ];
     }
