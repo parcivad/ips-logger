@@ -250,7 +250,7 @@ class Logger extends IPSModule {
                     [
                         "type" => "SelectColor",
                         "name" => "tableTopColor",
-                        "caption" => "Table head color"
+                        "caption" => "Headline color"
                     ],
                     [
                         "type" => "SelectColor",
@@ -267,7 +267,7 @@ class Logger extends IPSModule {
             [
                 "type" => "List",
                 "name" => "notificationList",
-                "caption" => "Select all Visual instanced that should get a possible notification",
+                "caption" => "Select all visual Instances that should get a possible notification",
                 "rowCount" => count(json_decode($this->ReadPropertyString("notificationList"), true)),
                 "add" => true,
                 "delete" => true,
@@ -287,7 +287,7 @@ class Logger extends IPSModule {
             [
                 "type" => "List",
                 "name" => "logLevels",
-                "caption" => "Mobile views to notify",
+                "caption" => "Log Levels",
                 "rowCount" => count(json_decode($this->ReadPropertyString("logLevels"), true)),
                 "sort" => [
                     "column" => "priority"
@@ -324,7 +324,7 @@ class Logger extends IPSModule {
                         ]
                     ],
                     [
-                        "caption" => "Font Weight",
+                        "caption" => "Font weight",
                         "name" => "font-weight",
                         "width" => "100px",
                         "add" => "normal",

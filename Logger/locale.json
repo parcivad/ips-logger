@@ -1,7 +1,19 @@
 {
   "translations": {
     "de": {
-      "Maximum of recorded Log entries": "Maximum der aufgenommenen Log Einträge"
+      "Maximum of recorded Log entries": "Maximum von Log Einträgen",
+      "Height of entries": "Höhe der Einträge",
+      "Height of the table": "Höhe der Tabelle",
+      "Background color": "Hintergrundfarbe",
+      "Headline color": "Titelfarbe",
+      "Line color": "Linienfarbe",
+      "Bottom color": "Endlinienfarbe",
+      "Select all visual Instances that should get a possible notification": "Wähle alle visuellen Instanzen aus, die eine Benachrichtigung bekommen sollen",
+      "Visual Instances": "Visuelle Instanzen",
+      "Priority": "Priorität",
+      "Color": "Farbe",
+      "Font weight": "Schrifttyp",
+      "Notifications": "Mitteilung"
     }
   }
 }
