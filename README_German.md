@@ -18,13 +18,13 @@ Das ist ein PHP plugin für die Smart-Home Anwendung [IP-Symcon](https://www.sym
 ## Installation
 Das Modul wird über diese Github Repository installiert.
 <p align="center">
-  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/img/install.png?raw=true">
+  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/imgs/install.png?raw=true">
 </p>
 
 ## Setup
 Wenn das Modul dann installiert ist, müssen sie einfach nur eine `Logger` instance erstellen. Danach können sie über die Instanz Mitteilungen, Farben, Höhen und Level von dem Logger ändern.
 <p align="center">
-  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/img/instance.png?raw=true">
+  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/imgs/instance.png?raw=true">
 </p>
 
 ### Levels
@@ -44,7 +44,7 @@ _so einfach is es_, ob der Eintrag benachrichtigt wird hängt von der Einstellun
 ## Webfront
 So sieht das Log dann im Webfront aus, die Farben, sowie Größen sind über die Instanz frei einstellbar.
 <p align="center">
-  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/img/webfront.png?raw=true">
+  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/imgs/webfront.png?raw=true">
 </p>
 
 # Donate

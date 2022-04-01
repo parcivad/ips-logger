@@ -20,13 +20,13 @@ _[German](https://github.com/parcivad/ips-logger/README_German.md)_
 ## Installation
 You can install the Logger via this github repository:
 <p align="center">
-  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/img/install.png?raw=true">
+  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/imgs/install.png?raw=true">
 </p>
 
 ## Setup
 When you installed the module you just have to create a `Logger` instance. Then your able to configure Logger Levels, Notifications, Table Style and other options.
 <p align="center">
-  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/img/instance.png?raw=true">
+  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/imgs/instance.png?raw=true">
 </p>
 
 ### Levels
@@ -45,7 +45,7 @@ _it's that simple_, you created a log entry. If it gets notified or highlighted 
 ## Webfront
 Here is a image of the default Log, every Color/Size is customizable to your needs.
 <p align="center">
-  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/img/webfront.png?raw=true">
+  <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/imgs/webfront.png?raw=true">
 </p>
 
 # Donate
