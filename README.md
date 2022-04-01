@@ -6,7 +6,7 @@ This is a PHP plugin for the Smart-Home Application [IP-Symcon](https://www.symc
 to have a user-friendly and html readable log plus other comfort features to get the best overview about your running
 system.
 
-_[German](https://github.com/parcivad/ips-logger/README_German.md)_
+_[German](https://github.com/parcivad/ips-logger/blob/main/README_German.md)_
 ```
 ```
 ## Table of Contents
