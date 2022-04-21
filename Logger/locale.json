@@ -1,6 +1,7 @@
 {
   "translations": {
     "de": {
+      "Active logging": "Aktives Logging",
       "Maximum of recorded Log entries": "Maximum von Log Einträgen",
       "Height of entries": "Höhe der Einträge",
       "Height of the table": "Höhe der Tabelle",
@@ -8,12 +9,21 @@
       "Headline color": "Titelfarbe",
       "Line color": "Linienfarbe",
       "Bottom color": "Endlinienfarbe",
-      "Select all visual Instances that should get a possible notification": "Wähle alle visuellen Instanzen aus, die eine Benachrichtigung bekommen sollen",
-      "Visual Instances": "Visuelle Instanzen",
-      "Priority": "Priorität",
+      "Select all visual Instances or SMTP Instances that should get a possible notification": "Wähle alle visuellen Instanzen oder SMTP Instanzen aus, die eine Benachrichtigung bekommen sollen",
+      "Visual Instances or SMTP Mail Instance": "Visuelle Instanzen oder SMTP Mail Instance",
       "Color": "Farbe",
       "Font weight": "Schrifttyp",
-      "Notifications": "Mitteilung"
+      "Notifications": "Mitteilung",
+      "Notification Settings": "Mitteilungs Einstellungen",
+      "Titel of the notification will be the group name (Group is needed to activate notifications)": "Titel der Mitteilung ist immer der Gruppenname (Erst durch eine Gruppe können Mitteilungen aktiviert werden)",
+      "Levels & Groups": "Level & Gruppen",
+      "Notification Format": "Mitteilungsformatierung",
+      "Log Groups": "Log Gruppen",
+      "Mail Notification": "Mail Mitteilung",
+      "Visual Notification": "Visuelle Mitteilung",
+      "Display Time": "Anzeigedauer",
+      "Sound": "Ton",
+      "Target Instance": "Ziel Instance"
     }
   }
 }
