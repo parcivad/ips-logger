@@ -74,6 +74,14 @@ class Logger extends IPSModule {
     }
 
     /**
+     * Function that returns the current log data
+     * @return array Log
+     */
+    public function getLog(): array {
+        return $this->readJson("log");
+    }
+
+    /**
      * Function to resort and refresh HTML View of the Variable view
      * @return void
      */
