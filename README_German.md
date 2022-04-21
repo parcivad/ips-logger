@@ -16,7 +16,7 @@ IP-Symcon Logger ist ein PHP plugin für die Smart-Home Anwendung [IP-Symcon](ht
 
 ## Installation
 Das Modul kann direkt über diese Github Repository installiert.
-<p align="center">
+<p align="left">
   <img width="auto" height="auto" src="https://github.com/parcivad/ips-logger/blob/main/imgs/install.png?raw=true">
 </p>
 
