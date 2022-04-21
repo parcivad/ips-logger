@@ -11,10 +11,10 @@ class Logger extends IPSModule {
 
         // inner json saves
         $this->RegisterAttributeString("htmlView", '<head><meta name="viewport" content="width=device-width, initial-scale=1"><style>%s</style></head><body><table class="styled-table"><colgroup><col class="colLevel"><col class="colPriority"><col class="colMessage"><col class="colSender"><col class="colTime"></colgroup><thead><tr><th>Level</th><th>Group</th><th>Message</th><th>Sender</th><th>Time</th></tr></thead><tbody>%s</tbody></table></body>');
-        $this->RegisterAttributeString("cssView", '.styled-table {position: relative;display: block;background-color: #%s;border-collapse: collapse;width: %d;height: %dpx;overflow-y: auto;overflow-x: hidden;font-size: 0.9em;font-family: sans-serif;box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);}.styled-table thead tr {background-color: #%s;color: #fff;text-align: left;padding: 7px 15px;}.styled-table th,.styled-table td {padding: %dpx 15px;}.styled-table td {color: #ffffff;}.styled-table tbody tr {border-bottom: 1px solid #%s;}.styled-table tbody tr:last-of-type {border-bottom: 2px solid #%s;}.styled-table tbody tr.active-row {font-weight: bold;color: #818181;}.colLevel {width: 30em;}.colPriority {width: 110em;}.colMessage {width: 1100em;}.colSender {width: 125em;}.colTime {width: 125em;}');
+        $this->RegisterAttributeString("cssView", '.styled-table {position: relative;display: block;background-color: #%s;border-collapse: collapse;width: %d;height: %dpx;overflow-y: auto;overflow-x: hidden;font-size: 0.9em;font-family: sans-serif;box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);}.styled-table thead tr {background-color: #%s;color: #fff;text-align: left;padding: 7px 15px;}.styled-table th,.styled-table td {padding: %dpx 15px;}.styled-table td {color: #ffffff;}.styled-table tbody tr {border-bottom: 1px solid #%s;}.styled-table tbody tr:last-of-type {border-bottom: 2px solid #%s;}.styled-table tbody tr.active-row {font-weight: bold;color: #818181;}.colLevel {width: 30em;}.colPriority {width: 120em;}.colMessage {width: 1100em;}.colSender {width: 125em;}.colTime {width: 150em;}');
         $this->RegisterAttributeString("log", '[{"time": "0","level": "Info", "group": "default", "message": "This is the beginning of your own log","sender": "Parcivad"}]');
         $this->RegisterPropertyString("logLevels", '[{"name":"Ok","color":2412282367,"font-weight":"normal"},{"name":"Info","color":3685444,"font-weight":"normal"},{"name":"Discovery","color":5482187,"font-weight":"normal"},{"name":"Warning","color":14924843,"font-weight":"bold"},{"name":"Error","color":14896427,"font-weight":"bold"}]');
-        $this->RegisterPropertyString("logGroups", '[{"name":"default","mailNotify":false, "visualNotify":false, "displayTime": 0, "sound":"normal", "targetInstance": 0}]');
+        $this->RegisterPropertyString("logGroups", '[{"name":"default","mailNotify":false, "visualNotify":false, "displayTime": 0, "sound":"normal", "icon": "Database", "targetInstance": 0}]');
 
         // user interface settings
         // general settings
@@ -58,7 +58,7 @@ class Logger extends IPSModule {
         $log = $this->readJson("log");
         // check if level exists
         if ($this->getLevel($level) == null) throw new UnexpectedValueException("level does not exist");
-        if ($this->getGroup($level) == null) throw new UnexpectedValueException("group does not exist");
+        if ($this->getGroup($group) == null) throw new UnexpectedValueException("group does not exist");
         // format new entry
         $log[] = [
             "time" => time(),
@@ -88,7 +88,7 @@ class Logger extends IPSModule {
             $itemLevel = $this->getLevel($item['level']);
             // form html table body element with given log info
             $tbody .= sprintf('<tr style="background-color:%s"><td style="font-weight:%s;">%s</td>
-                <td>%d</td><td>%s</td><td>%s</td><td>%s</td></tr>',
+                <td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>',
                 '#'.dechex($itemLevel['color']), $itemLevel['font-weight'], $item['level'], $item['group'],
                 $item['message'], $item['sender'], date("H:i:s d.m.y", $item['time']));
         }
@@ -135,8 +135,11 @@ class Logger extends IPSModule {
                     // check if visual notifications are allowed from that group
                     if (!$this->getGroup($group)["visualNotify"]) return;
                     // Visual Notify
-                    WFC_PushNotification($receiver['instance'], $group, $msgString, "full", $this->InstanceID);
-                    WFC_SendNotification($receiver['instance'], $group, $msgString, "Database", 300);
+                    WFC_PushNotification($receiver['instance'], $group, $msgString,
+                        $this->getGroup($group)["sound"], $this->getGroup($group)["targetInstance"]);
+
+                    WFC_SendNotification($receiver['instance'], $group, $msgString,
+                        $this->getGroup($group)["icon"], 300);
                 }
             } catch (Exception $ex) {
                 IPS_LogMessage("Logger", "Popup-/Pushnotification could not be sent");
@@ -415,14 +418,15 @@ class Logger extends IPSModule {
                         "name" => "logGroups",
                         "caption" => "Log Groups",
                         "rowCount" => count(json_decode($this->ReadPropertyString("logGroups"), true)),
-                        "add" => false,
-                        "delete" => false,
+                        "add" => true,
+                        "delete" => true,
                         "edit" => true,
                         "columns" => [
                             [
                                 "caption" => "Name",
                                 "name" => "name",
                                 "width" => "180px",
+                                "add" => "MyGroup",
                                 "edit" => [
                                     "type" => "ValidationTextBox"
                                 ]
@@ -431,6 +435,7 @@ class Logger extends IPSModule {
                                 "caption" => "Mail Notification",
                                 "name" => "mailNotify",
                                 "width" => "180px",
+                                "add" => false,
                                 "edit" => [
                                     "type" => "CheckBox"
                                 ]
@@ -439,6 +444,7 @@ class Logger extends IPSModule {
                                 "caption" => "Visual Notification",
                                 "name" => "visualNotify",
                                 "width" => "180px",
+                                "add" => false,
                                 "edit" => [
                                     "type" => "CheckBox"
                                 ]
@@ -447,6 +453,7 @@ class Logger extends IPSModule {
                                 "caption" => "Display Time",
                                 "name" => "displayTime",
                                 "width" => "180px",
+                                "add" => 0,
                                 "edit" => [
                                     "type" => "NumberSpinner",
                                     "suffix" => "sec.",
@@ -457,10 +464,9 @@ class Logger extends IPSModule {
                                 "caption" => "Sound",
                                 "name" => "sound",
                                 "width" => "180px",
+                                "add" => "",
                                 "edit" => [
                                     "type" => "Select",
-                                    "name" => "notify_sound",
-                                    "caption" => "Notification sounds",
                                     "options" => [
                                         [ "caption" => "Normal", "value" => "" ],
                                         [ "caption" => "alarm", "value" => "alarm" ],
@@ -486,9 +492,183 @@ class Logger extends IPSModule {
                                 ]
                             ],
                             [
+                                "caption" => "Icon",
+                                "name" => "icon",
+                                "width" => "180px",
+                                "add" => "",
+                                "edit" => [
+                                    "type" => "Select",
+                                    "options" => [
+                                        [ "caption" => "Aircraft", "value" => "Aircraft" ],
+                                        [ "caption" => "Alert", "value" => "Alert" ],
+                                        [ "caption" => "ArrowRight", "value" => "ArrowRight" ],
+                                        [ "caption" => "Backspace", "value" => "Backspace" ],
+                                        [ "caption" => "Basement", "value" => "Basement" ],
+                                        [ "caption" => "Bath", "value" => "Bath" ],
+                                        [ "caption" => "Battery", "value" => "Battery" ],
+                                        [ "caption" => "Bed", "value" => "Bed" ],
+                                        [ "caption" => "Bike", "value" => "Bike" ],
+                                        [ "caption" => "Book", "value" => "Book" ],
+                                        [ "caption" => "Bulb", "value" => "Bulb" ],
+                                        [ "caption" => "Calendar", "value" => "Calendar" ],
+                                        [ "caption" => "Camera", "value" => "Camera" ],
+                                        [ "caption" => "Car", "value" => "Car" ],
+                                        [ "caption" => "Caret", "value" => "Caret" ],
+                                        [ "caption" => "Cat", "value" => "Cat" ],
+                                        [ "caption" => "Climate", "value" => "Climate" ],
+                                        [ "caption" => "Clock", "value" => "Clock" ],
+                                        [ "caption" => "Close", "value" => "Close" ],
+                                        [ "caption" => "CloseAll", "value" => "CloseAll" ],
+                                        [ "caption" => "Cloud", "value" => "Cloud" ],
+                                        [ "caption" => "Cloudy", "value" => "Cloudy" ],
+                                        [ "caption" => "Cocktail", "value" => "Cocktail" ],
+                                        [ "caption" => "Cross", "value" => "Cross" ],
+                                        [ "caption" => "Database", "value" => "Database" ],
+                                        [ "caption" => "Dining", "value" => "Dining" ],
+                                        [ "caption" => "Distance", "value" => "Distance" ],
+                                        [ "caption" => "DoctorBag", "value" => "DoctorBag" ],
+                                        [ "caption" => "Dog", "value" => "Dog" ],
+                                        [ "caption" => "Dollar", "value" => "Dollar" ],
+                                        [ "caption" => "Door", "value" => "Door" ],
+                                        [ "caption" => "Download", "value" => "Download" ],
+                                        [ "caption" => "Drops", "value" => "Drops" ],
+                                        [ "caption" => "Duck", "value" => "Duck" ],
+                                        [ "caption" => "Edit", "value" => "Edit" ],
+                                        [ "caption" => "Electricity", "value" => "Electricity" ],
+                                        [ "caption" => "EnergyProduction", "value" => "EnergyProduction" ],
+                                        [ "caption" => "EnergySolar", "value" => "EnergySolar" ],
+                                        [ "caption" => "EnergyStorage", "value" => "EnergyStorage" ],
+                                        [ "caption" => "ErlenmeyerFlask", "value" => "ErlenmeyerFlask" ],
+                                        [ "caption" => "Euro", "value" => "Euro" ],
+                                        [ "caption" => "Execute", "value" => "Execute" ],
+                                        [ "caption" => "Eyes", "value" => "Eyes" ],
+                                        [ "caption" => "Factory", "value" => "Factory" ],
+                                        [ "caption" => "Favorite", "value" => "Favorite" ],
+                                        [ "caption" => "Female", "value" => "Female" ],
+                                        [ "caption" => "Fitness", "value" => "Fitness" ],
+                                        [ "caption" => "Flag", "value" => "Flag" ],
+                                        [ "caption" => "Flame", "value" => "Flame" ],
+                                        [ "caption" => "FloorLamp", "value" => "FloorLamp" ],
+                                        [ "caption" => "Flower", "value" => "Flower" ],
+                                        [ "caption" => "Fog", "value" => "Fog" ],
+                                        [ "caption" => "Garage", "value" => "Garage" ],
+                                        [ "caption" => "Gas", "value" => "Gas" ],
+                                        [ "caption" => "Gauge", "value" => "Gauge" ],
+                                        [ "caption" => "Gear", "value" => "Gear" ],
+                                        [ "caption" => "Graph", "value" => "Graph" ],
+                                        [ "caption" => "GroundFloor", "value" => "GroundFloor" ],
+                                        [ "caption" => "Handicap", "value" => "Handicap" ],
+                                        [ "caption" => "Heart", "value" => "Heart" ],
+                                        [ "caption" => "Help", "value" => "Help" ],
+                                        [ "caption" => "HollowArrowDown", "value" => "HollowArrowDown" ],
+                                        [ "caption" => "HollowArrowLeft", "value" => "HollowArrowLeft" ],
+                                        [ "caption" => "HollowArrowRight", "value" => "HollowArrowRight" ],
+                                        [ "caption" => "HollowArrowUp", "value" => "HollowArrowUp" ],
+                                        [ "caption" => "HollowDoubleArrowDown", "value" => "HollowDoubleArrowDown" ],
+                                        [ "caption" => "HollowDoubleArrowLeft", "value" => "HollowDoubleArrowLeft" ],
+                                        [ "caption" => "HollowDoubleArrowRight", "value" => "HollowDoubleArrowRight" ],
+                                        [ "caption" => "HollowDoubleArrowUp", "value" => "HollowDoubleArrowUp" ],
+                                        [ "caption" => "HollowLargeArrowDown", "value" => "HollowLargeArrowDown" ],
+                                        [ "caption" => "HollowLargeArrowLeft", "value" => "HollowLargeArrowLeft" ],
+                                        [ "caption" => "HollowLargeArrowRight", "value" => "HollowLargeArrowRight" ],
+                                        [ "caption" => "HollowLargeArrowUp", "value" => "HollowLargeArrowUp" ],
+                                        [ "caption" => "Hourglass", "value" => "Hourglass" ],
+                                        [ "caption" => "HouseRemote", "value" => "HouseRemote" ],
+                                        [ "caption" => "Image", "value" => "Image" ],
+                                        [ "caption" => "Information", "value" => "Information" ],
+                                        [ "caption" => "Intensity", "value" => "Intensity" ],
+                                        [ "caption" => "Internet", "value" => "Internet" ],
+                                        [ "caption" => "IPS", "value" => "IPS" ],
+                                        [ "caption" => "Jalousie", "value" => "Jalousie" ],
+                                        [ "caption" => "Key", "value" => "Key" ],
+                                        [ "caption" => "Keyboard", "value" => "Keyboard" ],
+                                        [ "caption" => "Kitchen", "value" => "Kitchen" ],
+                                        [ "caption" => "Leaf", "value" => "Leaf" ],
+                                        [ "caption" => "Light", "value" => "Light" ],
+                                        [ "caption" => "Lightning", "value" => "Lightning" ],
+                                        [ "caption" => "Link", "value" => "Link" ],
+                                        [ "caption" => "Lock", "value" => "Lock" ],
+                                        [ "caption" => "LockClosed", "value" => "LockClosed" ],
+                                        [ "caption" => "LockOpen", "value" => "LockOpen" ],
+                                        [ "caption" => "Macro", "value" => "Macro" ],
+                                        [ "caption" => "Mail", "value" => "Mail" ],
+                                        [ "caption" => "Male", "value" => "Male" ],
+                                        [ "caption" => "Melody", "value"=> "Melody" ],
+                                        [ "caption" => "Menu", "value" => "Menu" ],
+                                        [ "caption" => "Minus", "value" => "Minus" ],
+                                        [ "caption" => "Mobile", "value" => "Mobile" ],
+                                        [ "caption" => "Moon", "value" => "Moon" ],
+                                        [ "caption" => "Motion", "value" => "Motion" ],
+                                        [ "caption" => "Move", "value" => "Move" ],
+                                        [ "caption" => "Music", "value" => "Music" ],
+                                        [ "caption" => "Network", "value" => "Network" ],
+                                        [ "caption" => "Notebook", "value" => "Notebook" ],
+                                        [ "caption" => "Ok", "value" => "Ok" ],
+                                        [ "caption" => "Pacifier", "value" => "Pacifier" ],
+                                        [ "caption" => "Paintbrush", "value" => "Paintbrush" ],
+                                        [ "caption" => "Pants", "value" => "Pants" ],
+                                        [ "caption" => "Party", "value" => "Party" ],
+                                        [ "caption" => "People", "value" => "People" ],
+                                        [ "caption" => "Plug", "value" => "Plug" ],
+                                        [ "caption" => "Plus", "value" => "Plus" ],
+                                        [ "caption" => "Popcorn", "value" => "Popcorn" ],
+                                        [ "caption" => "Power", "value" => "Power" ],
+                                        [ "caption" => "Presence", "value" => "Presence" ],
+                                        [ "caption" => "Radiator", "value" => "Radiator" ],
+                                        [ "caption" => "Raffstore", "value" => "Raffstore" ],
+                                        [ "caption" => "Rainfall", "value" => "Rainfall" ],
+                                        [ "caption" => "Recycling", "value" => "Recycling" ],
+                                        [ "caption" => "Remote", "value" => "Remote" ],
+                                        [ "caption" => "Repeat", "value" => "Repeat" ],
+                                        [ "caption" => "Return", "value" => "Return" ],
+                                        [ "caption" => "Robot", "value" => "Robot" ],
+                                        [ "caption" => "Rocket", "value" => "Rocket" ],
+                                        [ "caption" => "Script", "value" => "Script" ],
+                                        [ "caption" => "Shift", "value" => "Shift" ],
+                                        [ "caption" => "Shower", "value" => "Shower" ],
+                                        [ "caption" => "Shuffle", "value" => "Shuffle" ],
+                                        [ "caption" => "Shutter", "value" => "Shutter" ],
+                                        [ "caption" => "Sink", "value" => "Sink" ],
+                                        [ "caption" => "Sleep", "value" => "Sleep" ],
+                                        [ "caption" => "Snow", "value" => "Snow" ],
+                                        [ "caption" => "Snowflake", "value" => "Snowflake" ],
+                                        [ "caption" => "Sofa", "value" => "Sofa" ],
+                                        [ "caption" => "Speaker", "value" => "Speaker" ],
+                                        [ "caption" => "Speedo", "value" => "Speedo" ],
+                                        [ "caption" => "Stars", "value" => "Stars" ],
+                                        [ "caption" => "Sun", "value" => "Sun" ],
+                                        [ "caption" => "Sunny", "value" => "Sunny" ],
+                                        [ "caption" => "Talk", "value" => "Talk" ],
+                                        [ "caption" => "Tap", "value" => "Tap" ],
+                                        [ "caption" => "Teddy", "value" => "Teddy" ],
+                                        [ "caption" => "Tee", "value" => "Tee" ],
+                                        [ "caption" => "Telephone", "value" => "Telephone" ],
+                                        [ "caption" => "Temperature", "value" => "Temperature" ],
+                                        [ "caption" => "Thunder", "value" => "Thunder" ],
+                                        [ "caption" => "Title", "value" => "Title" ],
+                                        [ "caption" => "TopFloor", "value" => "TopFloor" ],
+                                        [ "caption" => "Tree", "value" => "Tree" ],
+                                        [ "caption" => "TurnLeft", "value" => "TurnLeft" ],
+                                        [ "caption" => "TurnRight", "value" => "TurnRight" ],
+                                        [ "caption" => "TV", "value" => "TV" ],
+                                        [ "caption" => "Umbrella", "value" => "Umbrella" ],
+                                        [ "caption" => "Unicorn", "value" => "Unicorn" ],
+                                        [ "caption" => "Ventilation", "value" => "Ventilation" ],
+                                        [ "caption" => "Warning", "value" => "Warning" ],
+                                        [ "caption" => "Wave", "value" => "Wave" ],
+                                        [ "caption" => "Wellness", "value" => "Wellness" ],
+                                        [ "caption" => "WindDirection", "value" => "WindDirection" ],
+                                        [ "caption" => "WindSpeed", "value" => "WindSpeed" ],
+                                        [ "caption" => "Window", "value" => "Window" ],
+                                        [ "caption" => "WC", "value" => "WC" ]
+                                    ],
+                                ]
+                            ],
+                            [
                                 "caption" => "Target Instance",
                                 "name" => "targetInstance",
                                 "width" => "auto",
+                                "add" => $this->InstanceID,
                                 "edit" => [
                                     "type" => "SelectInstance",
                                 ]
