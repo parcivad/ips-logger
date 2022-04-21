@@ -4,8 +4,7 @@
 [![Version](https://img.shields.io/badge/Symcon%20Version-6.0%20%3E-brightgreen.svg?style=flat-square)](https://www.symcon.de/produkt/)
 
 # IP-Symcon Logger
-This PHP plugin is for the Smart-Home Application [IP-Symcon](https://www.symcon.de). With this extension you are able
-to have a user-friendly and html readable log plus other comfort features like push notification and mail management. All this with the main goal to get the best overview about your running system.
+This PHP plugin is for the Smart-Home Application [IP-Symcon](https://www.symcon.de). With this extension, you can have a user-friendly and Html readable log plus other comfort features like push notification and mail management. All this with the main goal to get the best overview of your running system.
 
 _[German Documentation](https://github.com/parcivad/ips-logger/blob/main/README_German.md)_
 
@@ -30,15 +29,15 @@ When you installed the module you just have to create a `Logger` device instance
 </p>
 
 ### Design & Style
-In the Design and Style panel you are able to adjust used `css` to format and color the log table. You can change colors and widths or heigths.
+In the Design and Style panel, you can adjust the used `CSS` to format and color the log table. You can change colors and widths or heights.
 
 ### Notification Settings
 Here you can add all your Visual Instances that should get notified if the group allows `visual` notifications. SMTP Mail Instances are also possible for E-Mail notifications (group needs to allow `mail` notifications).
 
-Below the instance selection there are fields to change the message format. 
+Below the instance selection, there are fields to change the message format. 
 
 ## Levels & Groups
-The Levels represent the typical priority of a entry, you are able to change the color or font type. More important to you are the Groups, groups define the way of representation of the entry. Should it be send as a notification or only marked as entry. For more detail you can change icon, target instance, and sound of the notification (sound only on mobile!).
+The Levels represent the typical priority of an entry, you can change the color or font type. More important to you are the Groups, groups define the way of representation of the entry. Should it be sent as a notification or only marked as an entry? For more detail, you can change the icon, target instance, and sound of the notification (sound only on mobile!).
 
 ## Functions
 At the moment there is one single function that keeps it simple for you. Note that `{sender}, {msg} and {level}` will get replaced with the content of the log entry, but their no needed conditions in the formating.
@@ -48,7 +47,7 @@ Create a entry with defined Level and Group
 ```php
 logger_entry($instanceID, "level", "group", "message", "sender");
 ```
-_it's that simple_, you created a log entry. If you want this log entry to get notified just change the settings of your group (log levels don't effect any notification settings)
+_it's that simple_, you created a log entry. If you want this log entry to get notified just change the settings of your group (log levels don't affect any notification settings)
 
 ### getLog()
 The Getter Log will give you an array with all current saved log entries
