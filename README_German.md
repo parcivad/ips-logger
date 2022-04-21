@@ -6,8 +6,6 @@
 # IP-Symcon Logger
 IP-Symcon Logger ist ein PHP plugin für die Smart-Home Anwendung [IP-Symcon](https://www.symcon.de). Mit dieser Erweiterung lassen sich Benachrichtigungen und Vorgänge im eigenen Symcon System besser überwachen und überprüfen. Einträge werden nicht einfach nur als Log verzeichnet, sondern sollen viel mehr den Nutzer ansprechen, als das eher technische Symcon Log.
 
-```
-```
 ## Table of Contents
 
 - [Installation](#installation)
